@@ -20,21 +20,15 @@ function SignUp() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
 
   const submit = () => {
     if (busy) return;
-    setError("");
-    if (password && confirm && password !== confirm) {
-      setError("Passwords do not match.");
-      return;
-    }
     setBusy(true);
-    const result = beginSignup({
+    beginSignup({
       companyName: name.trim() || "New Company",
       fullName: name.trim() || "Hiring Manager",
       jobTitle: "Hiring Manager",
-      email,
+      email: email.trim() || `employer.${Date.now()}@company.com`,
       phone,
       password: password || confirm || "Employer123",
       companySize: COMPANY_SIZES[2] ?? "51–200",
@@ -42,10 +36,6 @@ function SignUp() {
       website: "",
     });
     setBusy(false);
-    if (!result.ok) {
-      setError("An employer account with that work email already exists.");
-      return;
-    }
     haptic();
     navigate({ to: "/verify", replace: true });
   };
@@ -84,7 +74,6 @@ function SignUp() {
         />
         <PasswordField label="Password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="new-password" placeholder="Create a password" />
         <PasswordField label="Confirm password" value={confirm} onChange={(event) => setConfirm(event.target.value)} autoComplete="new-password" placeholder="Repeat password" />
-        {error && <p className="-mt-2 mb-3 text-sm font-medium text-danger">{error}</p>}
         <PrimaryButton className="w-full" disabled={busy} onClick={submit}>
           {busy ? "Creating account…" : "Create Account"}
         </PrimaryButton>

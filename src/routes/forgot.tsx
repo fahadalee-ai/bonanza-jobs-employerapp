@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
+import { DEMO_EMAIL } from "@/lib/mock-data";
 import { useApp } from "@/lib/store";
 import { Logo } from "@/components/brand";
 import { AuthCanvas, PrimaryButton, SecondaryButton, SuccessMark, TextField } from "@/components/ui-app";
@@ -14,11 +15,9 @@ function Forgot() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
-  const [found, setFound] = useState(true);
 
   const send = () => {
-    const ok = requestReset(email);
-    setFound(ok);
+    requestReset(email || DEMO_EMAIL);
     setSent(true);
   };
 
@@ -38,15 +37,13 @@ function Forgot() {
       {sent ? (
         <div className="mt-10 rounded-3xl bg-white p-6 text-center shadow-[0_16px_40px_rgba(15,11,42,0.22)]">
           <SuccessMark />
-          <h1 className="mt-5 text-2xl font-semibold text-heading">{found ? "Check your inbox" : "Email not found"}</h1>
+          <h1 className="mt-5 text-2xl font-semibold text-heading">Check your inbox</h1>
           <p className="mt-2 text-[15px] leading-6 text-muted-foreground">
-            {found ? `We sent a reset link for ${email || "your work email"}.` : "We couldn’t find an employer account with that work email."}
+            We sent a reset link for {email || "your work email"}.
           </p>
-          {found && (
-            <SecondaryButton className="mt-6 w-full" onClick={() => navigate({ to: "/reset" })}>
-              Enter a new password
-            </SecondaryButton>
-          )}
+          <SecondaryButton className="mt-6 w-full" onClick={() => navigate({ to: "/reset" })}>
+            Enter a new password
+          </SecondaryButton>
         </div>
       ) : (
         <>

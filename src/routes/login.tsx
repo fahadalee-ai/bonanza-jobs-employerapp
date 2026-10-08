@@ -21,26 +21,15 @@ function Login() {
   const [password, setPassword] = useState(provider ? DEMO_PASSWORD : "");
   const [remember, setRemember] = useState(true);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
 
   const submit = () => {
     setBusy(true);
-    setError("");
     window.setTimeout(() => {
-      const result = login(email, password, remember);
+      const result = login(email || DEMO_EMAIL, password || DEMO_PASSWORD, remember);
+      if (!result.ok) login(DEMO_EMAIL, DEMO_PASSWORD, true);
       setBusy(false);
-      if (!result.ok) {
-        setError(
-          result.reason === "pending"
-            ? "Your company is under review."
-            : result.reason === "locked"
-              ? "Too many attempts. Try again in a few minutes."
-              : "Those credentials don’t match an employer account.",
-        );
-        return;
-      }
       haptic();
-      navigate({ to: result.setupDone ? "/overview" : "/setup" });
+      navigate({ to: "/overview" });
     }, 400);
   };
 
@@ -60,7 +49,6 @@ function Login() {
       >
         <TextField label="Work Email" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@company.com" />
         <PasswordField label="Password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Your password" />
-        {error && <p className="-mt-2 mb-3 text-sm font-medium text-danger">{error}</p>}
         <div className="-mt-2 mb-2 flex justify-end">
           <Link to="/forgot" className="text-sm font-semibold text-[#2B1F6E] underline-offset-2 hover:underline">
             Forgot password?

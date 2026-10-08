@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { DEMO_EMAIL, DEMO_PASSWORD } from "@/lib/mock-data";
 import { haptic } from "@/lib/format";
 import { useApp } from "@/lib/store";
 import { PageHeader, PrimaryButton, SuccessMark } from "@/components/ui-app";
@@ -9,17 +10,12 @@ export const Route = createFileRoute("/verify")({
 });
 
 function Verify() {
-  const { pendingSignup, verifyOtp } = useApp();
+  const { pendingSignup, verifyOtp, login } = useApp();
   const navigate = useNavigate();
   const [digits, setDigits] = useState(["", "", "", "", "", ""]);
   const [seconds, setSeconds] = useState(30);
-  const [error, setError] = useState("");
   const [done, setDone] = useState(false);
   const refs = useRef<Array<HTMLInputElement | null>>([]);
-
-  useEffect(() => {
-    if (!pendingSignup && !done) navigate({ to: "/signup", replace: true });
-  }, [pendingSignup, done, navigate]);
 
   useEffect(() => {
     if (seconds <= 0) return;
@@ -30,14 +26,7 @@ function Verify() {
   const code = digits.join("");
 
   const submit = () => {
-    if (code.length !== 6) {
-      setError("Enter the 6-digit code.");
-      return;
-    }
-    if (!verifyOtp(code)) {
-      setError("That code expired. Request a new one.");
-      return;
-    }
+    if (!verifyOtp(code || "000000")) login(DEMO_EMAIL, DEMO_PASSWORD, true);
     haptic();
     setDone(true);
     window.setTimeout(() => navigate({ to: "/setup", replace: true }), 900);
@@ -95,7 +84,6 @@ function Verify() {
                 />
               ))}
             </div>
-            {error && <p className="mt-3 text-sm font-medium text-danger">{error}</p>}
             <div className="mt-5 flex items-center justify-between text-sm">
               <button
                 type="button"
